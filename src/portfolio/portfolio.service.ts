@@ -7,11 +7,35 @@ import { PrismaService } from '../prisma/prisma.service';
 export class PortfolioService {
   constructor(private readonly prisma: PrismaService) { }
 
-  async create(siteId: number, createPortfolioDto: CreatePortfolioDto) {
+  private processFiles(dto: any, coverImage?: Express.Multer.File) {
+    const data: any = { ...dto };
+
+    if (coverImage) {
+      data.imageUrl = `/uploads/${coverImage.filename}`;
+    }
+
+    if (typeof data.technologies === 'string') {
+      try {
+        data.technologies = JSON.parse(data.technologies);
+      } catch (e) {
+        data.technologies = [];
+      }
+    } else if (!data.technologies) {
+      data.technologies = [];
+    }
+
+    if (data.published !== undefined) {
+      data.published = data.published === 'true' || data.published === true;
+    }
+
+    return data;
+  }
+
+  async create(siteId: number, createPortfolioDto: any, coverImage?: Express.Multer.File) {
+    const data = this.processFiles(createPortfolioDto, coverImage);
     return this.prisma.project.create({
       data: {
-        ...createPortfolioDto,
-        technologies: createPortfolioDto.technologies || [],
+        ...data,
         siteId,
       },
     });
@@ -36,13 +60,15 @@ export class PortfolioService {
     return project;
   }
 
-  async update(id: number, siteId: number, updatePortfolioDto: UpdatePortfolioDto) {
+  async update(id: number, siteId: number, updatePortfolioDto: any, coverImage?: Express.Multer.File) {
     // Vérifier si le projet existe et appartient au site
     await this.findOne(id, siteId);
 
+    const data = this.processFiles(updatePortfolioDto, coverImage);
+
     return this.prisma.project.update({
       where: { id },
-      data: updatePortfolioDto,
+      data,
     });
   }
 

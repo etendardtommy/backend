@@ -37,6 +37,7 @@ model Project {
   githubUrl   String?
   liveUrl     String?
   technologies String[]
+  published   Boolean  @default(false)
   siteId      Int
   site        Site     @relation(fields: [siteId], references: [id], onDelete: Cascade)
   createdAt   DateTime @default(now())

@@ -18,6 +18,7 @@ class CreatePortfolioDto {
     githubUrl;
     liveUrl;
     technologies;
+    published;
 }
 exports.CreatePortfolioDto = CreatePortfolioDto;
 __decorate([
@@ -33,7 +34,6 @@ __decorate([
 __decorate([
     (0, class_validator_1.IsOptional)(),
     (0, class_validator_1.ValidateIf)(o => o.imageUrl !== ''),
-    (0, class_validator_1.IsUrl)({}, { message: 'L\'URL de l\'image doit être une adresse web valide' }),
     __metadata("design:type", String)
 ], CreatePortfolioDto.prototype, "imageUrl", void 0);
 __decorate([
@@ -50,8 +50,12 @@ __decorate([
 ], CreatePortfolioDto.prototype, "liveUrl", void 0);
 __decorate([
     (0, class_validator_1.IsOptional)(),
-    (0, class_validator_1.IsArray)(),
-    (0, class_validator_1.IsString)({ each: true }),
-    __metadata("design:type", Array)
+    (0, class_validator_1.IsString)(),
+    __metadata("design:type", String)
 ], CreatePortfolioDto.prototype, "technologies", void 0);
+__decorate([
+    (0, class_validator_1.IsOptional)(),
+    (0, class_validator_1.IsBooleanString)(),
+    __metadata("design:type", String)
+], CreatePortfolioDto.prototype, "published", void 0);
 //# sourceMappingURL=create-portfolio.dto.js.map

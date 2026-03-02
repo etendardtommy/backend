@@ -1,14 +1,13 @@
 import { PortfolioService } from './portfolio.service';
-import { CreatePortfolioDto } from './dto/create-portfolio.dto';
-import { UpdatePortfolioDto } from './dto/update-portfolio.dto';
 export declare class PortfolioController {
     private readonly portfolioService;
     constructor(portfolioService: PortfolioService);
     private getSiteId;
-    create(siteIdHeader: string, createPortfolioDto: CreatePortfolioDto): Promise<{
+    create(siteIdHeader: string, createPortfolioDto: any, coverImage?: Express.Multer.File): Promise<{
         id: number;
         title: string;
         imageUrl: string | null;
+        published: boolean;
         siteId: number;
         createdAt: Date;
         updatedAt: Date;
@@ -21,6 +20,7 @@ export declare class PortfolioController {
         id: number;
         title: string;
         imageUrl: string | null;
+        published: boolean;
         siteId: number;
         createdAt: Date;
         updatedAt: Date;
@@ -33,6 +33,7 @@ export declare class PortfolioController {
         id: number;
         title: string;
         imageUrl: string | null;
+        published: boolean;
         siteId: number;
         createdAt: Date;
         updatedAt: Date;
@@ -41,10 +42,11 @@ export declare class PortfolioController {
         liveUrl: string | null;
         technologies: string[];
     }>;
-    update(id: string, siteIdHeader: string, updatePortfolioDto: UpdatePortfolioDto): Promise<{
+    update(id: string, siteIdHeader: string, updatePortfolioDto: any, coverImage?: Express.Multer.File): Promise<{
         id: number;
         title: string;
         imageUrl: string | null;
+        published: boolean;
         siteId: number;
         createdAt: Date;
         updatedAt: Date;
@@ -57,6 +59,7 @@ export declare class PortfolioController {
         id: number;
         title: string;
         imageUrl: string | null;
+        published: boolean;
         siteId: number;
         createdAt: Date;
         updatedAt: Date;

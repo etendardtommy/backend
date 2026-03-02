@@ -4,5 +4,6 @@ export declare class CreatePortfolioDto {
     imageUrl?: string;
     githubUrl?: string;
     liveUrl?: string;
-    technologies?: string[];
+    technologies?: string;
+    published?: string;
 }

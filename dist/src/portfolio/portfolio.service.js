@@ -17,11 +17,32 @@ let PortfolioService = class PortfolioService {
     constructor(prisma) {
         this.prisma = prisma;
     }
-    async create(siteId, createPortfolioDto) {
+    processFiles(dto, coverImage) {
+        const data = { ...dto };
+        if (coverImage) {
+            data.imageUrl = `/uploads/${coverImage.filename}`;
+        }
+        if (typeof data.technologies === 'string') {
+            try {
+                data.technologies = JSON.parse(data.technologies);
+            }
+            catch (e) {
+                data.technologies = [];
+            }
+        }
+        else if (!data.technologies) {
+            data.technologies = [];
+        }
+        if (data.published !== undefined) {
+            data.published = data.published === 'true' || data.published === true;
+        }
+        return data;
+    }
+    async create(siteId, createPortfolioDto, coverImage) {
+        const data = this.processFiles(createPortfolioDto, coverImage);
         return this.prisma.project.create({
             data: {
-                ...createPortfolioDto,
-                technologies: createPortfolioDto.technologies || [],
+                ...data,
                 siteId,
             },
         });
@@ -41,11 +62,12 @@ let PortfolioService = class PortfolioService {
         }
         return project;
     }
-    async update(id, siteId, updatePortfolioDto) {
+    async update(id, siteId, updatePortfolioDto, coverImage) {
         await this.findOne(id, siteId);
+        const data = this.processFiles(updatePortfolioDto, coverImage);
         return this.prisma.project.update({
             where: { id },
-            data: updatePortfolioDto,
+            data,
         });
     }
     async remove(id, siteId) {

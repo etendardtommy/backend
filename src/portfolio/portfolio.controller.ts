@@ -1,8 +1,19 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards, Headers, BadRequestException } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards, Headers, BadRequestException, UseInterceptors, UploadedFile } from '@nestjs/common';
+import { FileInterceptor } from '@nestjs/platform-express';
 import { PortfolioService } from './portfolio.service';
 import { CreatePortfolioDto } from './dto/create-portfolio.dto';
 import { UpdatePortfolioDto } from './dto/update-portfolio.dto';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
+import { diskStorage } from 'multer';
+import * as path from 'path';
+
+const storageOptions = diskStorage({
+  destination: './uploads',
+  filename: (req, file, cb) => {
+    const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
+    cb(null, file.fieldname + '-' + uniqueSuffix + path.extname(file.originalname));
+  }
+});
 
 @Controller('portfolio/projects')
 export class PortfolioController {
@@ -21,8 +32,13 @@ export class PortfolioController {
 
   @UseGuards(JwtAuthGuard)
   @Post()
-  create(@Headers('x-site-id') siteIdHeader: string, @Body() createPortfolioDto: CreatePortfolioDto) {
-    return this.portfolioService.create(this.getSiteId(siteIdHeader), createPortfolioDto);
+  @UseInterceptors(FileInterceptor('coverImage', { storage: storageOptions }))
+  create(
+    @Headers('x-site-id') siteIdHeader: string,
+    @Body() createPortfolioDto: any, // any used since FormData sends strings
+    @UploadedFile() coverImage?: Express.Multer.File
+  ) {
+    return this.portfolioService.create(this.getSiteId(siteIdHeader), createPortfolioDto, coverImage);
   }
 
   @Get()
@@ -37,8 +53,14 @@ export class PortfolioController {
 
   @UseGuards(JwtAuthGuard)
   @Patch(':id')
-  update(@Param('id') id: string, @Headers('x-site-id') siteIdHeader: string, @Body() updatePortfolioDto: UpdatePortfolioDto) {
-    return this.portfolioService.update(+id, this.getSiteId(siteIdHeader), updatePortfolioDto);
+  @UseInterceptors(FileInterceptor('coverImage', { storage: storageOptions }))
+  update(
+    @Param('id') id: string,
+    @Headers('x-site-id') siteIdHeader: string,
+    @Body() updatePortfolioDto: any,
+    @UploadedFile() coverImage?: Express.Multer.File
+  ) {
+    return this.portfolioService.update(+id, this.getSiteId(siteIdHeader), updatePortfolioDto, coverImage);
   }
 
   @UseGuards(JwtAuthGuard)

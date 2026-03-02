@@ -1,4 +1,4 @@
-import { IsNotEmpty, IsOptional, IsString, IsArray, IsUrl, ValidateIf } from 'class-validator';
+import { IsNotEmpty, IsOptional, IsString, IsUrl, ValidateIf, IsBooleanString } from 'class-validator';
 
 export class CreatePortfolioDto {
     @IsNotEmpty()
@@ -11,7 +11,6 @@ export class CreatePortfolioDto {
 
     @IsOptional()
     @ValidateIf(o => o.imageUrl !== '')
-    @IsUrl({}, { message: 'L\'URL de l\'image doit être une adresse web valide' })
     imageUrl?: string;
 
     @IsOptional()
@@ -25,7 +24,10 @@ export class CreatePortfolioDto {
     liveUrl?: string;
 
     @IsOptional()
-    @IsArray()
-    @IsString({ each: true })
-    technologies?: string[];
+    @IsString()
+    technologies?: string;
+
+    @IsOptional()
+    @IsBooleanString()
+    published?: string;
 }

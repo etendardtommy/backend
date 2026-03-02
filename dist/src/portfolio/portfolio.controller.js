@@ -1,10 +1,43 @@
 "use strict";
+var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    var desc = Object.getOwnPropertyDescriptor(m, k);
+    if (!desc || ("get" in desc ? !m.__esModule : desc.writable || desc.configurable)) {
+      desc = { enumerable: true, get: function() { return m[k]; } };
+    }
+    Object.defineProperty(o, k2, desc);
+}) : (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    o[k2] = m[k];
+}));
+var __setModuleDefault = (this && this.__setModuleDefault) || (Object.create ? (function(o, v) {
+    Object.defineProperty(o, "default", { enumerable: true, value: v });
+}) : function(o, v) {
+    o["default"] = v;
+});
 var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
     var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
     if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
     else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
     return c > 3 && r && Object.defineProperty(target, key, r), r;
 };
+var __importStar = (this && this.__importStar) || (function () {
+    var ownKeys = function(o) {
+        ownKeys = Object.getOwnPropertyNames || function (o) {
+            var ar = [];
+            for (var k in o) if (Object.prototype.hasOwnProperty.call(o, k)) ar[ar.length] = k;
+            return ar;
+        };
+        return ownKeys(o);
+    };
+    return function (mod) {
+        if (mod && mod.__esModule) return mod;
+        var result = {};
+        if (mod != null) for (var k = ownKeys(mod), i = 0; i < k.length; i++) if (k[i] !== "default") __createBinding(result, mod, k[i]);
+        __setModuleDefault(result, mod);
+        return result;
+    };
+})();
 var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
@@ -14,10 +47,18 @@ var __param = (this && this.__param) || function (paramIndex, decorator) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.PortfolioController = void 0;
 const common_1 = require("@nestjs/common");
+const platform_express_1 = require("@nestjs/platform-express");
 const portfolio_service_1 = require("./portfolio.service");
-const create_portfolio_dto_1 = require("./dto/create-portfolio.dto");
-const update_portfolio_dto_1 = require("./dto/update-portfolio.dto");
 const jwt_auth_guard_1 = require("../auth/guards/jwt-auth.guard");
+const multer_1 = require("multer");
+const path = __importStar(require("path"));
+const storageOptions = (0, multer_1.diskStorage)({
+    destination: './uploads',
+    filename: (req, file, cb) => {
+        const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
+        cb(null, file.fieldname + '-' + uniqueSuffix + path.extname(file.originalname));
+    }
+});
 let PortfolioController = class PortfolioController {
     portfolioService;
     constructor(portfolioService) {
@@ -33,8 +74,8 @@ let PortfolioController = class PortfolioController {
         }
         return siteId;
     }
-    create(siteIdHeader, createPortfolioDto) {
-        return this.portfolioService.create(this.getSiteId(siteIdHeader), createPortfolioDto);
+    create(siteIdHeader, createPortfolioDto, coverImage) {
+        return this.portfolioService.create(this.getSiteId(siteIdHeader), createPortfolioDto, coverImage);
     }
     findAll(siteIdHeader) {
         return this.portfolioService.findAll(this.getSiteId(siteIdHeader));
@@ -42,8 +83,8 @@ let PortfolioController = class PortfolioController {
     findOne(id, siteIdHeader) {
         return this.portfolioService.findOne(+id, this.getSiteId(siteIdHeader));
     }
-    update(id, siteIdHeader, updatePortfolioDto) {
-        return this.portfolioService.update(+id, this.getSiteId(siteIdHeader), updatePortfolioDto);
+    update(id, siteIdHeader, updatePortfolioDto, coverImage) {
+        return this.portfolioService.update(+id, this.getSiteId(siteIdHeader), updatePortfolioDto, coverImage);
     }
     remove(id, siteIdHeader) {
         return this.portfolioService.remove(+id, this.getSiteId(siteIdHeader));
@@ -53,10 +94,12 @@ exports.PortfolioController = PortfolioController;
 __decorate([
     (0, common_1.UseGuards)(jwt_auth_guard_1.JwtAuthGuard),
     (0, common_1.Post)(),
+    (0, common_1.UseInterceptors)((0, platform_express_1.FileInterceptor)('coverImage', { storage: storageOptions })),
     __param(0, (0, common_1.Headers)('x-site-id')),
     __param(1, (0, common_1.Body)()),
+    __param(2, (0, common_1.UploadedFile)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [String, create_portfolio_dto_1.CreatePortfolioDto]),
+    __metadata("design:paramtypes", [String, Object, Object]),
     __metadata("design:returntype", void 0)
 ], PortfolioController.prototype, "create", null);
 __decorate([
@@ -77,11 +120,13 @@ __decorate([
 __decorate([
     (0, common_1.UseGuards)(jwt_auth_guard_1.JwtAuthGuard),
     (0, common_1.Patch)(':id'),
+    (0, common_1.UseInterceptors)((0, platform_express_1.FileInterceptor)('coverImage', { storage: storageOptions })),
     __param(0, (0, common_1.Param)('id')),
     __param(1, (0, common_1.Headers)('x-site-id')),
     __param(2, (0, common_1.Body)()),
+    __param(3, (0, common_1.UploadedFile)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [String, String, update_portfolio_dto_1.UpdatePortfolioDto]),
+    __metadata("design:paramtypes", [String, String, Object, Object]),
     __metadata("design:returntype", void 0)
 ], PortfolioController.prototype, "update", null);
 __decorate([

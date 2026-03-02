@@ -1,13 +1,13 @@
-import { CreatePortfolioDto } from './dto/create-portfolio.dto';
-import { UpdatePortfolioDto } from './dto/update-portfolio.dto';
 import { PrismaService } from '../prisma/prisma.service';
 export declare class PortfolioService {
     private readonly prisma;
     constructor(prisma: PrismaService);
-    create(siteId: number, createPortfolioDto: CreatePortfolioDto): Promise<{
+    private processFiles;
+    create(siteId: number, createPortfolioDto: any, coverImage?: Express.Multer.File): Promise<{
         id: number;
         title: string;
         imageUrl: string | null;
+        published: boolean;
         siteId: number;
         createdAt: Date;
         updatedAt: Date;
@@ -20,6 +20,7 @@ export declare class PortfolioService {
         id: number;
         title: string;
         imageUrl: string | null;
+        published: boolean;
         siteId: number;
         createdAt: Date;
         updatedAt: Date;
@@ -32,6 +33,7 @@ export declare class PortfolioService {
         id: number;
         title: string;
         imageUrl: string | null;
+        published: boolean;
         siteId: number;
         createdAt: Date;
         updatedAt: Date;
@@ -40,10 +42,11 @@ export declare class PortfolioService {
         liveUrl: string | null;
         technologies: string[];
     }>;
-    update(id: number, siteId: number, updatePortfolioDto: UpdatePortfolioDto): Promise<{
+    update(id: number, siteId: number, updatePortfolioDto: any, coverImage?: Express.Multer.File): Promise<{
         id: number;
         title: string;
         imageUrl: string | null;
+        published: boolean;
         siteId: number;
         createdAt: Date;
         updatedAt: Date;
@@ -56,6 +59,7 @@ export declare class PortfolioService {
         id: number;
         title: string;
         imageUrl: string | null;
+        published: boolean;
         siteId: number;
         createdAt: Date;
         updatedAt: Date;
