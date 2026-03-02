@@ -1,0 +1,58 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// Exemple de modèle pour démarrer
+model User {
+  id        Int      @id @default(autoincrement())
+  username  String   @unique
+  password  String
+  name      String?
+  role      String   @default("USER") // Pour différencier Admin et User plus tard
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Site {
+  id          Int       @id @default(autoincrement())
+  name        String
+  url         String?
+  description String?
+  projects    Project[]
+  articles    Article[]
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+}
+
+model Project {
+  id          Int      @id @default(autoincrement())
+  title       String
+  description String
+  imageUrl    String?
+  githubUrl   String?
+  liveUrl     String?
+  technologies String[]
+  siteId      Int
+  site        Site     @relation(fields: [siteId], references: [id], onDelete: Cascade)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model Article {
+  id          Int      @id @default(autoincrement())
+  title       String
+  htmlContent String   @db.Text
+  excerpt     String?
+  imageUrl    String?
+  published   Boolean  @default(false)
+  tags        String[]
+  siteId      Int
+  site        Site     @relation(fields: [siteId], references: [id], onDelete: Cascade)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
