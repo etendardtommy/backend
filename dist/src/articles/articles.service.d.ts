@@ -77,4 +77,7 @@ export declare class ArticlesService {
         createdAt: Date;
         updatedAt: Date;
     }>;
+    uploadImage(file: Express.Multer.File): {
+        url: string;
+    };
 }

@@ -17,12 +17,13 @@ const auth_module_1 = require("./auth/auth.module");
 const portfolio_module_1 = require("./portfolio/portfolio.module");
 const sites_module_1 = require("./sites/sites.module");
 const articles_module_1 = require("./articles/articles.module");
+const experience_module_1 = require("./experience/experience.module");
 let AppModule = class AppModule {
 };
 exports.AppModule = AppModule;
 exports.AppModule = AppModule = __decorate([
     (0, common_1.Module)({
-        imports: [config_1.ConfigModule.forRoot({ isGlobal: true }), prisma_module_1.PrismaModule, users_module_1.UsersModule, auth_module_1.AuthModule, portfolio_module_1.PortfolioModule, sites_module_1.SitesModule, articles_module_1.ArticlesModule],
+        imports: [config_1.ConfigModule.forRoot({ isGlobal: true }), prisma_module_1.PrismaModule, users_module_1.UsersModule, auth_module_1.AuthModule, portfolio_module_1.PortfolioModule, sites_module_1.SitesModule, articles_module_1.ArticlesModule, experience_module_1.ExperienceModule],
         controllers: [app_controller_1.AppController],
         providers: [app_service_1.AppService],
     })

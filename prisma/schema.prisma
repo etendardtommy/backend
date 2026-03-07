@@ -18,17 +18,19 @@ model User {
 }
 
 model Site {
-  id          Int       @id @default(autoincrement())
+  id          Int          @id @default(autoincrement())
   name        String
   url         String?
   description String?
-  createdAt   DateTime  @default(now())
-  updatedAt   DateTime  @updatedAt
+  createdAt   DateTime     @default(now())
+  updatedAt   DateTime     @updatedAt
   articles    Article[]
   projects    Project[]
+  experiences Experience[]
 }
 
 model Project {
+  // ... (lines 31-41)
   id           Int      @id @default(autoincrement())
   title        String
   description  String
@@ -51,6 +53,21 @@ model Article {
   imageUrl    String?
   published   Boolean  @default(false)
   tags        String[]
+  siteId      Int
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  site         Site     @relation(fields: [siteId], references: [id], onDelete: Cascade)
+}
+
+model Experience {
+  id          Int      @id @default(autoincrement())
+  type        String // 'work' or 'education'
+  date        String // e.g., '2021 - 2023' or '2023 - Présent'
+  title       String
+  subtitle    String
+  description String
+  skills      String? // Optional comma-separated skills
+  published   Boolean  @default(false)
   siteId      Int
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt

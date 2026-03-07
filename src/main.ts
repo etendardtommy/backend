@@ -8,7 +8,12 @@ async function bootstrap() {
   const app = await NestFactory.create<NestExpressApplication>(AppModule);
 
   // Activer le partage de ressources cross-origin (CORS) pour React
-  app.enableCors();
+  app.enableCors({
+    origin: true,
+    methods: 'GET,HEAD,PUT,PATCH,POST,DELETE,OPTIONS',
+    credentials: true,
+    allowedHeaders: 'Content-Type,Accept,Authorization,x-site-id',
+  });
 
   // Ajouter le préfixe /api à toutes les routes
   app.setGlobalPrefix('api');

@@ -145,6 +145,12 @@ let ArticlesService = class ArticlesService {
             where: { id },
         });
     }
+    uploadImage(file) {
+        if (!file) {
+            throw new Error('Aucun fichier fourni');
+        }
+        return { url: `/uploads/${file.filename}` };
+    }
 };
 exports.ArticlesService = ArticlesService;
 exports.ArticlesService = ArticlesService = __decorate([

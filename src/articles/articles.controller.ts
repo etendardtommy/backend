@@ -1,5 +1,5 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards, Query, UseInterceptors, UploadedFiles } from '@nestjs/common';
-import { FileFieldsInterceptor } from '@nestjs/platform-express';
+import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards, Query, UseInterceptors, UploadedFiles, UploadedFile } from '@nestjs/common';
+import { FileFieldsInterceptor, FileInterceptor } from '@nestjs/platform-express';
 import { ArticlesService } from './articles.service';
 import { CreateArticleDto } from './dto/create-article.dto';
 import { UpdateArticleDto } from './dto/update-article.dto';
@@ -18,6 +18,13 @@ const storageOptions = diskStorage({
 @Controller('articles')
 export class ArticlesController {
   constructor(private readonly articlesService: ArticlesService) { }
+
+  @UseGuards(JwtAuthGuard)
+  @Post('upload-image')
+  @UseInterceptors(FileInterceptor('image', { storage: storageOptions }))
+  uploadImage(@UploadedFile() file: Express.Multer.File) {
+    return this.articlesService.uploadImage(file);
+  }
 
   @UseGuards(JwtAuthGuard)
   @Post()

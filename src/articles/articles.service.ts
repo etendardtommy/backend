@@ -30,18 +30,19 @@ export class ArticlesService {
       }
     }
 
-    // Process uploaded HTML file
+    // Process uploaded HTML file (legacy approach)
     if (files && files.htmlFile && files.htmlFile.length > 0) {
       const htmlFilePath = files.htmlFile[0].path;
       try {
         const htmlContent = fs.readFileSync(htmlFilePath, 'utf8');
         finalData.htmlContent = htmlContent;
-        // Optionally delete the physical .html file after reading it to save space
         fs.unlinkSync(htmlFilePath);
       } catch (err) {
         console.error("Erreur lors de la lecture du fichier HTML", err);
       }
     }
+    // New approach: htmlContent sent directly as string (from WYSIWYG editor)
+    // If already set in finalData (from JSON body), keep it as-is
 
     // Process uploaded Cover Image
     if (files && files.coverImage && files.coverImage.length > 0) {
@@ -123,5 +124,12 @@ export class ArticlesService {
     return this.prisma.article.delete({
       where: { id },
     });
+  }
+
+  uploadImage(file: Express.Multer.File) {
+    if (!file) {
+      throw new Error('Aucun fichier fourni');
+    }
+    return { url: `/uploads/${file.filename}` };
   }
 }

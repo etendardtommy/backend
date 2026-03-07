@@ -64,6 +64,9 @@ let ArticlesController = class ArticlesController {
     constructor(articlesService) {
         this.articlesService = articlesService;
     }
+    uploadImage(file) {
+        return this.articlesService.uploadImage(file);
+    }
     create(createArticleDto, files) {
         return this.articlesService.create(createArticleDto, files);
     }
@@ -81,6 +84,15 @@ let ArticlesController = class ArticlesController {
     }
 };
 exports.ArticlesController = ArticlesController;
+__decorate([
+    (0, common_1.UseGuards)(jwt_auth_guard_1.JwtAuthGuard),
+    (0, common_1.Post)('upload-image'),
+    (0, common_1.UseInterceptors)((0, platform_express_1.FileInterceptor)('image', { storage: storageOptions })),
+    __param(0, (0, common_1.UploadedFile)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object]),
+    __metadata("design:returntype", void 0)
+], ArticlesController.prototype, "uploadImage", null);
 __decorate([
     (0, common_1.UseGuards)(jwt_auth_guard_1.JwtAuthGuard),
     (0, common_1.Post)(),

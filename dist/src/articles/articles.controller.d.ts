@@ -2,6 +2,9 @@ import { ArticlesService } from './articles.service';
 export declare class ArticlesController {
     private readonly articlesService;
     constructor(articlesService: ArticlesService);
+    uploadImage(file: Express.Multer.File): {
+        url: string;
+    };
     create(createArticleDto: any, files: {
         coverImage?: Express.Multer.File[];
         htmlFile?: Express.Multer.File[];
