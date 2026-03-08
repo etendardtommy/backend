@@ -9,9 +9,11 @@ import { PortfolioModule } from './portfolio/portfolio.module';
 import { SitesModule } from './sites/sites.module';
 import { ArticlesModule } from './articles/articles.module';
 import { ExperienceModule } from './experience/experience.module';
+import { MessagesModule } from './messages/messages.module';
+import { AnalyticsModule } from './analytics/analytics.module';
 
 @Module({
-  imports: [ConfigModule.forRoot({ isGlobal: true }), PrismaModule, UsersModule, AuthModule, PortfolioModule, SitesModule, ArticlesModule, ExperienceModule],
+  imports: [ConfigModule.forRoot({ isGlobal: true }), PrismaModule, UsersModule, AuthModule, PortfolioModule, SitesModule, ArticlesModule, ExperienceModule, MessagesModule, AnalyticsModule],
   controllers: [AppController],
   providers: [AppService],
 })

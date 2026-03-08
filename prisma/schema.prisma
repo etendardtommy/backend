@@ -27,6 +27,8 @@ model Site {
   articles    Article[]
   projects    Project[]
   experiences Experience[]
+  messages    Message[]
+  pageViews   PageView[]
 }
 
 model Project {
@@ -73,3 +75,25 @@ model Experience {
   updatedAt   DateTime @updatedAt
   site        Site     @relation(fields: [siteId], references: [id], onDelete: Cascade)
 }
+
+model Message {
+  id        Int      @id @default(autoincrement())
+  name      String
+  email     String
+  message   String
+  status    String   @default("UNREAD") // UNREAD, READ, REPLIED
+  siteId    Int?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  site      Site?    @relation(fields: [siteId], references: [id], onDelete: Cascade)
+}
+
+model PageView {
+  id        Int      @id @default(autoincrement())
+  ipHash    String   // Pour éviter de compter le même visiteur en boucle
+  path      String?  // Quelle page a été visitée
+  siteId    Int?
+  createdAt DateTime @default(now())
+  site      Site?    @relation(fields: [siteId], references: [id], onDelete: Cascade)
+}
+
