@@ -44,21 +44,35 @@ let MessagesService = MessagesService_1 = class MessagesService {
         return savedMessage;
     }
     async sendNotificationEmail(messageData) {
-        if (!this.resend || !process.env.CONTACT_EMAIL) {
+        if (!this.resend) {
             return;
         }
+        const isEclyps = messageData.siteId === 2;
+        const targetEmail = isEclyps ? process.env.ECLYPS_CONTACT_EMAIL : process.env.CONTACT_EMAIL;
+        if (!targetEmail) {
+            this.logger.warn(`Email not sent: Environment variable for ${isEclyps ? 'ECLYPS_CONTACT_EMAIL' : 'CONTACT_EMAIL'} is missing.`);
+            return;
+        }
+        const subject = isEclyps
+            ? `Demande de scrim de ${messageData.name} - Eclyps`
+            : `Nouveau message de ${messageData.name} - Portfolio`;
+        const htmlContent = isEclyps
+            ? `<h2>Nouvelle demande de scrim (Eclyps)</h2>
+               <p><strong>Équipe :</strong> ${messageData.name}</p>
+               <p><strong>Email de contact :</strong> ${messageData.email}</p>
+               <hr />
+               <h3>Informations de la demande :</h3>
+               <p>${messageData.message.replace(/\n/g, '<br />')}</p>`
+            : `<h2>Nouveau message depuis le Portfolio</h2>
+               <p><strong>De:</strong> ${messageData.name} (${messageData.email})</p>
+               <hr />
+               <h3>Message:</h3>
+               <p>${messageData.message.replace(/\n/g, '<br />')}</p>`;
         await this.resend.emails.send({
-            from: 'Portfolio Contact <onboarding@resend.dev>',
-            to: process.env.CONTACT_EMAIL,
-            subject: `Nouveau message de ${messageData.name} - Portfolio`,
-            html: `
-        <h2>Nouveau message depuis le Portfolio</h2>
-        <p><strong>De:</strong> ${messageData.name} (${messageData.email})</p>
-        <p><strong>Site ID:</strong> ${messageData.siteId || 'N/A'}</p>
-        <hr />
-        <h3>Message:</h3>
-        <p>${messageData.message.replace(/\n/g, '<br />')}</p>
-      `,
+            from: 'Portfolio / Eclyps Contact <onboarding@resend.dev>',
+            to: targetEmail,
+            subject: subject,
+            html: htmlContent,
         });
     }
     async findAll() {

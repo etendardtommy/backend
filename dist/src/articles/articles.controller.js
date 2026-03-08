@@ -98,7 +98,6 @@ __decorate([
     (0, common_1.Post)(),
     (0, common_1.UseInterceptors)((0, platform_express_1.FileFieldsInterceptor)([
         { name: 'coverImage', maxCount: 1 },
-        { name: 'htmlFile', maxCount: 1 },
     ], { storage: storageOptions })),
     __param(0, (0, common_1.Body)()),
     __param(1, (0, common_1.UploadedFiles)()),
@@ -125,7 +124,6 @@ __decorate([
     (0, common_1.Patch)(':id'),
     (0, common_1.UseInterceptors)((0, platform_express_1.FileFieldsInterceptor)([
         { name: 'coverImage', maxCount: 1 },
-        { name: 'htmlFile', maxCount: 1 },
     ], { storage: storageOptions })),
     __param(0, (0, common_1.Param)('id')),
     __param(1, (0, common_1.Body)()),

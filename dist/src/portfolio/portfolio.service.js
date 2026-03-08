@@ -18,9 +18,11 @@ let PortfolioService = class PortfolioService {
         this.prisma = prisma;
     }
     processFiles(dto, coverImage) {
+        const port = process.env.PORT || 3000;
+        const appUrl = process.env.APP_URL || `http://localhost:${port}`;
         const data = { ...dto };
         if (coverImage) {
-            data.imageUrl = `/uploads/${coverImage.filename}`;
+            data.imageUrl = `${appUrl}/uploads/${coverImage.filename}`;
         }
         if (typeof data.technologies === 'string') {
             try {

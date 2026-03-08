@@ -9,7 +9,9 @@ import * as path from 'path';
 export class ArticlesService {
   constructor(private prisma: PrismaService) { }
 
-  private processFiles(data: any, files: { coverImage?: Express.Multer.File[], htmlFile?: Express.Multer.File[] }) {
+  private processFiles(data: any, files: { coverImage?: Express.Multer.File[] }) {
+    const port = process.env.PORT || 3000;
+    const appUrl = process.env.APP_URL || `http://localhost:${port}`;
     let finalData = { ...data };
 
     // Convert stringified fields back from FormData
@@ -30,31 +32,15 @@ export class ArticlesService {
       }
     }
 
-    // Process uploaded HTML file (legacy approach)
-    if (files && files.htmlFile && files.htmlFile.length > 0) {
-      const htmlFilePath = files.htmlFile[0].path;
-      try {
-        const htmlContent = fs.readFileSync(htmlFilePath, 'utf8');
-        finalData.htmlContent = htmlContent;
-        fs.unlinkSync(htmlFilePath);
-      } catch (err) {
-        console.error("Erreur lors de la lecture du fichier HTML", err);
-      }
-    }
-    // New approach: htmlContent sent directly as string (from WYSIWYG editor)
-    // If already set in finalData (from JSON body), keep it as-is
-
     // Process uploaded Cover Image
     if (files && files.coverImage && files.coverImage.length > 0) {
-      // Create a public URL path (assuming backend runs on localhost:3000 for now, or just relative path)
-      const imagePath = `/uploads/${files.coverImage[0].filename}`;
-      finalData.imageUrl = imagePath;
+      finalData.imageUrl = `${appUrl}/uploads/${files.coverImage[0].filename}`;
     }
 
     return finalData;
   }
 
-  async create(createArticleDto: any, files: { coverImage?: Express.Multer.File[], htmlFile?: Express.Multer.File[] }) {
+  async create(createArticleDto: any, files: { coverImage?: Express.Multer.File[] }) {
     const processedData = this.processFiles(createArticleDto, files);
     const { siteId, ...articleData } = processedData;
 
@@ -106,7 +92,7 @@ export class ArticlesService {
     return article;
   }
 
-  async update(id: number, updateArticleDto: any, files: { coverImage?: Express.Multer.File[], htmlFile?: Express.Multer.File[] }) {
+  async update(id: number, updateArticleDto: any, files: { coverImage?: Express.Multer.File[] }) {
     await this.findOne(id); // Ensure article exists
 
     const processedData = this.processFiles(updateArticleDto, files);
@@ -130,6 +116,8 @@ export class ArticlesService {
     if (!file) {
       throw new Error('Aucun fichier fourni');
     }
-    return { url: `/uploads/${file.filename}` };
+    const port = process.env.PORT || 3000;
+    const appUrl = process.env.APP_URL || `http://localhost:${port}`;
+    return { url: `${appUrl}/uploads/${file.filename}` };
   }
 }

@@ -21,12 +21,13 @@ const experience_module_1 = require("./experience/experience.module");
 const messages_module_1 = require("./messages/messages.module");
 const analytics_module_1 = require("./analytics/analytics.module");
 const gallery_module_1 = require("./gallery/gallery.module");
+const roster_module_1 = require("./roster/roster.module");
 let AppModule = class AppModule {
 };
 exports.AppModule = AppModule;
 exports.AppModule = AppModule = __decorate([
     (0, common_1.Module)({
-        imports: [config_1.ConfigModule.forRoot({ isGlobal: true }), prisma_module_1.PrismaModule, users_module_1.UsersModule, auth_module_1.AuthModule, portfolio_module_1.PortfolioModule, sites_module_1.SitesModule, articles_module_1.ArticlesModule, experience_module_1.ExperienceModule, messages_module_1.MessagesModule, analytics_module_1.AnalyticsModule, gallery_module_1.GalleryModule],
+        imports: [config_1.ConfigModule.forRoot({ isGlobal: true }), prisma_module_1.PrismaModule, users_module_1.UsersModule, auth_module_1.AuthModule, portfolio_module_1.PortfolioModule, sites_module_1.SitesModule, articles_module_1.ArticlesModule, experience_module_1.ExperienceModule, messages_module_1.MessagesModule, analytics_module_1.AnalyticsModule, gallery_module_1.GalleryModule, roster_module_1.RosterModule],
         controllers: [app_controller_1.AppController],
         providers: [app_service_1.AppService],
     })

@@ -5,7 +5,6 @@ export declare class ArticlesService {
     private processFiles;
     create(createArticleDto: any, files: {
         coverImage?: Express.Multer.File[];
-        htmlFile?: Express.Multer.File[];
     }): Promise<{
         id: number;
         title: string;
@@ -52,7 +51,6 @@ export declare class ArticlesService {
     }>;
     update(id: number, updateArticleDto: any, files: {
         coverImage?: Express.Multer.File[];
-        htmlFile?: Express.Multer.File[];
     }): Promise<{
         id: number;
         title: string;

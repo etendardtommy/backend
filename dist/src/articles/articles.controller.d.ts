@@ -7,7 +7,6 @@ export declare class ArticlesController {
     };
     create(createArticleDto: any, files: {
         coverImage?: Express.Multer.File[];
-        htmlFile?: Express.Multer.File[];
     }): Promise<{
         id: number;
         title: string;
@@ -54,7 +53,6 @@ export declare class ArticlesController {
     }>;
     update(id: string, updateArticleDto: any, files: {
         coverImage?: Express.Multer.File[];
-        htmlFile?: Express.Multer.File[];
     }): Promise<{
         id: number;
         title: string;

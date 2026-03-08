@@ -30,6 +30,18 @@ model Site {
   messages    Message[]
   pageViews   PageView[]
   galleryItems GalleryItem[]
+  rosterItems RosterItem[]
+}
+
+model RosterItem {
+  id        Int      @id @default(autoincrement())
+  name      String
+  number    String?
+  photoUrl  String?
+  siteId    Int
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  site      Site     @relation(fields: [siteId], references: [id], onDelete: Cascade)
 }
 
 model Project {

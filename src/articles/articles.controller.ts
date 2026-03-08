@@ -30,11 +30,10 @@ export class ArticlesController {
   @Post()
   @UseInterceptors(FileFieldsInterceptor([
     { name: 'coverImage', maxCount: 1 },
-    { name: 'htmlFile', maxCount: 1 },
   ], { storage: storageOptions }))
   create(
-    @Body() createArticleDto: any, // Using any because FormData sends strings, we'll parse in service
-    @UploadedFiles() files: { coverImage?: Express.Multer.File[], htmlFile?: Express.Multer.File[] }
+    @Body() createArticleDto: any,
+    @UploadedFiles() files: { coverImage?: Express.Multer.File[] }
   ) {
     return this.articlesService.create(createArticleDto, files);
   }
@@ -54,12 +53,11 @@ export class ArticlesController {
   @Patch(':id')
   @UseInterceptors(FileFieldsInterceptor([
     { name: 'coverImage', maxCount: 1 },
-    { name: 'htmlFile', maxCount: 1 },
   ], { storage: storageOptions }))
   update(
     @Param('id') id: string,
     @Body() updateArticleDto: any,
-    @UploadedFiles() files: { coverImage?: Express.Multer.File[], htmlFile?: Express.Multer.File[] }
+    @UploadedFiles() files: { coverImage?: Express.Multer.File[] }
   ) {
     return this.articlesService.update(+id, updateArticleDto, files);
   }
