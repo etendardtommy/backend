@@ -29,6 +29,7 @@ model Site {
   experiences Experience[]
   messages    Message[]
   pageViews   PageView[]
+  galleryItems GalleryItem[]
 }
 
 model Project {
@@ -96,4 +97,18 @@ model PageView {
   createdAt DateTime @default(now())
   site      Site?    @relation(fields: [siteId], references: [id], onDelete: Cascade)
 }
-
+model GalleryItem {
+  id          Int      @id @default(autoincrement())
+  type        String   @default("photo") // 'photo' or 'video'
+  title       String
+  description String?
+  imageUrl    String?  // URL for photo or thumbnail
+  videoUrl    String?  // URL for video (mp4 or YouTube)
+  category    String?  // ex: 'match', 'training', 'event'
+  tags        String[] // ex: ['scrim', '2025', 'team']
+  published   Boolean  @default(false)
+  siteId      Int
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  site        Site     @relation(fields: [siteId], references: [id], onDelete: Cascade)
+}

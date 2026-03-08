@@ -1,6 +1,6 @@
 import { Controller, Get, Post, Headers, Req, Query, UseGuards } from '@nestjs/common';
 import { AnalyticsService } from './analytics.service';
-import { Request } from 'express';
+import type { Request } from 'express';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import * as crypto from 'crypto';
 
@@ -21,14 +21,16 @@ export class AnalyticsController {
         const siteId = siteIdHeader ? parseInt(siteIdHeader, 10) : undefined;
         const path = req.body?.path || '/';
 
-        return this.analyticsService.trackVisit(ipHash, path, isNaN(siteId) ? undefined : siteId);
+        const validSiteId = siteId !== undefined && !isNaN(siteId) ? siteId : undefined;
+        return this.analyticsService.trackVisit(ipHash, path, validSiteId);
     }
 
     @UseGuards(JwtAuthGuard)
     @Get('stats')
     async getStats(@Query('siteId') siteIdQuery?: string) {
         const siteId = siteIdQuery ? parseInt(siteIdQuery, 10) : undefined;
-        const visits = await this.analyticsService.getVisitsCount(isNaN(siteId) ? undefined : siteId);
+        const validSiteId = siteId !== undefined && !isNaN(siteId) ? siteId : undefined;
+        const visits = await this.analyticsService.getVisitsCount(validSiteId);
 
         return { visits };
     }

@@ -11,9 +11,10 @@ import { ArticlesModule } from './articles/articles.module';
 import { ExperienceModule } from './experience/experience.module';
 import { MessagesModule } from './messages/messages.module';
 import { AnalyticsModule } from './analytics/analytics.module';
+import { GalleryModule } from './gallery/gallery.module';
 
 @Module({
-  imports: [ConfigModule.forRoot({ isGlobal: true }), PrismaModule, UsersModule, AuthModule, PortfolioModule, SitesModule, ArticlesModule, ExperienceModule, MessagesModule, AnalyticsModule],
+  imports: [ConfigModule.forRoot({ isGlobal: true }), PrismaModule, UsersModule, AuthModule, PortfolioModule, SitesModule, ArticlesModule, ExperienceModule, MessagesModule, AnalyticsModule, GalleryModule],
   controllers: [AppController],
   providers: [AppService],
 })
