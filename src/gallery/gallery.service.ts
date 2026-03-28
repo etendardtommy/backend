@@ -6,24 +6,32 @@ import { CreateGalleryItemDto } from './dto/create-gallery-item.dto';
 export class GalleryService {
     constructor(private prisma: PrismaService) { }
 
-    create(dto: any, siteId: number, files?: { imageFile?: Express.Multer.File[], videoFile?: Express.Multer.File[] }) {
+    private formatGalleryUrl(item: any) {
+        if (!item) return item;
         const port = process.env.PORT || 3000;
         const appUrl = process.env.APP_URL || `http://localhost:${port}`;
+        return {
+            ...item,
+            imageUrl: item.imageUrl?.startsWith('http') ? item.imageUrl : (item.imageUrl ? `${appUrl}${item.imageUrl}` : null),
+            videoUrl: item.videoUrl?.startsWith('http') ? item.videoUrl : (item.videoUrl ? `${appUrl}${item.videoUrl}` : null),
+        };
+    }
 
+    async create(dto: any, siteId: number, files?: { imageFile?: Express.Multer.File[], videoFile?: Express.Multer.File[] }) {
         let imageUrl = dto.imageUrl;
         let videoUrl = dto.videoUrl;
 
         if (files?.imageFile?.[0]) {
-            imageUrl = `${appUrl}/uploads/${files.imageFile[0].filename}`;
+            imageUrl = `/uploads/${files.imageFile[0].filename}`;
         }
         if (files?.videoFile?.[0]) {
-            videoUrl = `${appUrl}/uploads/${files.videoFile[0].filename}`;
+            videoUrl = `/uploads/${files.videoFile[0].filename}`;
         }
 
         const published = dto.published === 'true' || dto.published === true;
         const tags = Array.isArray(dto.tags) ? dto.tags : (typeof dto.tags === 'string' && dto.tags ? dto.tags.split(',').map((t: string) => t.trim()) : []);
 
-        return this.prisma.galleryItem.create({
+        const item = await this.prisma.galleryItem.create({
             data: {
                 title: dto.title,
                 type: dto.type,
@@ -36,37 +44,38 @@ export class GalleryService {
                 siteId,
             },
         });
+        return this.formatGalleryUrl(item);
     }
 
-    findAll(siteId: number) {
-        return this.prisma.galleryItem.findMany({
+    async findAll(siteId: number) {
+        const items = await this.prisma.galleryItem.findMany({
             where: { siteId },
             orderBy: { createdAt: 'desc' },
         });
+        return items.map(i => this.formatGalleryUrl(i));
     }
 
-    findPublished(siteId: number) {
-        return this.prisma.galleryItem.findMany({
+    async findPublished(siteId: number) {
+        const items = await this.prisma.galleryItem.findMany({
             where: { siteId, published: true },
             orderBy: { createdAt: 'desc' },
         });
+        return items.map(i => this.formatGalleryUrl(i));
     }
 
-    findOne(id: number) {
-        return this.prisma.galleryItem.findUnique({ where: { id } });
+    async findOne(id: number) {
+        const item = await this.prisma.galleryItem.findUnique({ where: { id } });
+        return this.formatGalleryUrl(item);
     }
 
-    update(id: number, dto: any, files?: { imageFile?: Express.Multer.File[], videoFile?: Express.Multer.File[] }) {
-        const port = process.env.PORT || 3000;
-        const appUrl = process.env.APP_URL || `http://localhost:${port}`;
-
+    async update(id: number, dto: any, files?: { imageFile?: Express.Multer.File[], videoFile?: Express.Multer.File[] }) {
         const data: any = { ...dto };
 
         if (files?.imageFile?.[0]) {
-            data.imageUrl = `${appUrl}/uploads/${files.imageFile[0].filename}`;
+            data.imageUrl = `/uploads/${files.imageFile[0].filename}`;
         }
         if (files?.videoFile?.[0]) {
-            data.videoUrl = `${appUrl}/uploads/${files.videoFile[0].filename}`;
+            data.videoUrl = `/uploads/${files.videoFile[0].filename}`;
         }
 
         if (data.published !== undefined) {
@@ -77,13 +86,15 @@ export class GalleryService {
             data.tags = Array.isArray(data.tags) ? data.tags : (typeof data.tags === 'string' && data.tags ? data.tags.split(',').map((t: string) => t.trim()) : []);
         }
 
-        return this.prisma.galleryItem.update({
+        const updatedItem = await this.prisma.galleryItem.update({
             where: { id },
             data,
         });
+        return this.formatGalleryUrl(updatedItem);
     }
 
-    remove(id: number) {
-        return this.prisma.galleryItem.delete({ where: { id } });
+    async remove(id: number) {
+        const deletedItem = await this.prisma.galleryItem.delete({ where: { id } });
+        return this.formatGalleryUrl(deletedItem);
     }
 }

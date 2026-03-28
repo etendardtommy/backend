@@ -17,20 +17,29 @@ let GalleryService = class GalleryService {
     constructor(prisma) {
         this.prisma = prisma;
     }
-    create(dto, siteId, files) {
+    formatGalleryUrl(item) {
+        if (!item)
+            return item;
         const port = process.env.PORT || 3000;
         const appUrl = process.env.APP_URL || `http://localhost:${port}`;
+        return {
+            ...item,
+            imageUrl: item.imageUrl?.startsWith('http') ? item.imageUrl : (item.imageUrl ? `${appUrl}${item.imageUrl}` : null),
+            videoUrl: item.videoUrl?.startsWith('http') ? item.videoUrl : (item.videoUrl ? `${appUrl}${item.videoUrl}` : null),
+        };
+    }
+    async create(dto, siteId, files) {
         let imageUrl = dto.imageUrl;
         let videoUrl = dto.videoUrl;
         if (files?.imageFile?.[0]) {
-            imageUrl = `${appUrl}/uploads/${files.imageFile[0].filename}`;
+            imageUrl = `/uploads/${files.imageFile[0].filename}`;
         }
         if (files?.videoFile?.[0]) {
-            videoUrl = `${appUrl}/uploads/${files.videoFile[0].filename}`;
+            videoUrl = `/uploads/${files.videoFile[0].filename}`;
         }
         const published = dto.published === 'true' || dto.published === true;
         const tags = Array.isArray(dto.tags) ? dto.tags : (typeof dto.tags === 'string' && dto.tags ? dto.tags.split(',').map((t) => t.trim()) : []);
-        return this.prisma.galleryItem.create({
+        const item = await this.prisma.galleryItem.create({
             data: {
                 title: dto.title,
                 type: dto.type,
@@ -43,31 +52,33 @@ let GalleryService = class GalleryService {
                 siteId,
             },
         });
+        return this.formatGalleryUrl(item);
     }
-    findAll(siteId) {
-        return this.prisma.galleryItem.findMany({
+    async findAll(siteId) {
+        const items = await this.prisma.galleryItem.findMany({
             where: { siteId },
             orderBy: { createdAt: 'desc' },
         });
+        return items.map(i => this.formatGalleryUrl(i));
     }
-    findPublished(siteId) {
-        return this.prisma.galleryItem.findMany({
+    async findPublished(siteId) {
+        const items = await this.prisma.galleryItem.findMany({
             where: { siteId, published: true },
             orderBy: { createdAt: 'desc' },
         });
+        return items.map(i => this.formatGalleryUrl(i));
     }
-    findOne(id) {
-        return this.prisma.galleryItem.findUnique({ where: { id } });
+    async findOne(id) {
+        const item = await this.prisma.galleryItem.findUnique({ where: { id } });
+        return this.formatGalleryUrl(item);
     }
-    update(id, dto, files) {
-        const port = process.env.PORT || 3000;
-        const appUrl = process.env.APP_URL || `http://localhost:${port}`;
+    async update(id, dto, files) {
         const data = { ...dto };
         if (files?.imageFile?.[0]) {
-            data.imageUrl = `${appUrl}/uploads/${files.imageFile[0].filename}`;
+            data.imageUrl = `/uploads/${files.imageFile[0].filename}`;
         }
         if (files?.videoFile?.[0]) {
-            data.videoUrl = `${appUrl}/uploads/${files.videoFile[0].filename}`;
+            data.videoUrl = `/uploads/${files.videoFile[0].filename}`;
         }
         if (data.published !== undefined) {
             data.published = data.published === 'true' || data.published === true;
@@ -75,13 +86,15 @@ let GalleryService = class GalleryService {
         if (data.tags !== undefined) {
             data.tags = Array.isArray(data.tags) ? data.tags : (typeof data.tags === 'string' && data.tags ? data.tags.split(',').map((t) => t.trim()) : []);
         }
-        return this.prisma.galleryItem.update({
+        const updatedItem = await this.prisma.galleryItem.update({
             where: { id },
             data,
         });
+        return this.formatGalleryUrl(updatedItem);
     }
-    remove(id) {
-        return this.prisma.galleryItem.delete({ where: { id } });
+    async remove(id) {
+        const deletedItem = await this.prisma.galleryItem.delete({ where: { id } });
+        return this.formatGalleryUrl(deletedItem);
     }
 };
 exports.GalleryService = GalleryService;

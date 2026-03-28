@@ -17,12 +17,20 @@ let PortfolioService = class PortfolioService {
     constructor(prisma) {
         this.prisma = prisma;
     }
-    processFiles(dto, coverImage) {
+    formatProjectUrl(project) {
+        if (!project)
+            return project;
         const port = process.env.PORT || 3000;
         const appUrl = process.env.APP_URL || `http://localhost:${port}`;
+        return {
+            ...project,
+            imageUrl: project.imageUrl?.startsWith('http') ? project.imageUrl : (project.imageUrl ? `${appUrl}${project.imageUrl}` : null)
+        };
+    }
+    processFiles(dto, coverImage) {
         const data = { ...dto };
         if (coverImage) {
-            data.imageUrl = `${appUrl}/uploads/${coverImage.filename}`;
+            data.imageUrl = `/uploads/${coverImage.filename}`;
         }
         if (typeof data.technologies === 'string') {
             try {
@@ -42,18 +50,20 @@ let PortfolioService = class PortfolioService {
     }
     async create(siteId, createPortfolioDto, coverImage) {
         const data = this.processFiles(createPortfolioDto, coverImage);
-        return this.prisma.project.create({
+        const project = await this.prisma.project.create({
             data: {
                 ...data,
                 siteId,
             },
         });
+        return this.formatProjectUrl(project);
     }
     async findAll(siteId) {
-        return this.prisma.project.findMany({
+        const projects = await this.prisma.project.findMany({
             where: { siteId },
             orderBy: { createdAt: 'desc' },
         });
+        return projects.map(p => this.formatProjectUrl(p));
     }
     async findOne(id, siteId) {
         const project = await this.prisma.project.findFirst({
@@ -62,21 +72,23 @@ let PortfolioService = class PortfolioService {
         if (!project) {
             throw new common_1.NotFoundException(`Le projet avec l'ID ${id} n'a pas été trouvé`);
         }
-        return project;
+        return this.formatProjectUrl(project);
     }
     async update(id, siteId, updatePortfolioDto, coverImage) {
         await this.findOne(id, siteId);
         const data = this.processFiles(updatePortfolioDto, coverImage);
-        return this.prisma.project.update({
+        const updatedProject = await this.prisma.project.update({
             where: { id },
             data,
         });
+        return this.formatProjectUrl(updatedProject);
     }
     async remove(id, siteId) {
         await this.findOne(id, siteId);
-        return this.prisma.project.delete({
+        const deletedProject = await this.prisma.project.delete({
             where: { id },
         });
+        return this.formatProjectUrl(deletedProject);
     }
 };
 exports.PortfolioService = PortfolioService;

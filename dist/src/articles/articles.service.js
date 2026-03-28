@@ -17,9 +17,17 @@ let ArticlesService = class ArticlesService {
     constructor(prisma) {
         this.prisma = prisma;
     }
-    processFiles(data, files) {
+    formatArticleUrl(article) {
+        if (!article)
+            return article;
         const port = process.env.PORT || 3000;
         const appUrl = process.env.APP_URL || `http://localhost:${port}`;
+        return {
+            ...article,
+            imageUrl: article.imageUrl?.startsWith('http') ? article.imageUrl : (article.imageUrl ? `${appUrl}${article.imageUrl}` : null)
+        };
+    }
+    processFiles(data, files) {
         let finalData = { ...data };
         if (finalData.published !== undefined) {
             finalData.published = finalData.published === 'true';
@@ -38,7 +46,7 @@ let ArticlesService = class ArticlesService {
             }
         }
         if (files && files.coverImage && files.coverImage.length > 0) {
-            finalData.imageUrl = `${appUrl}/uploads/${files.coverImage[0].filename}`;
+            finalData.imageUrl = `/uploads/${files.coverImage[0].filename}`;
         }
         return finalData;
     }
@@ -51,18 +59,24 @@ let ArticlesService = class ArticlesService {
         if (!site) {
             throw new common_1.NotFoundException(`Le site avec l'ID ${siteId} n'existe pas`);
         }
-        return this.prisma.article.create({
+        const article = await this.prisma.article.create({
             data: {
                 ...articleData,
                 site: {
                     connect: { id: siteId }
                 }
             },
+            include: {
+                site: {
+                    select: { name: true }
+                }
+            }
         });
+        return this.formatArticleUrl(article);
     }
     async findAll(siteId) {
         const whereClause = siteId ? { siteId } : {};
-        return this.prisma.article.findMany({
+        const articles = await this.prisma.article.findMany({
             where: whereClause,
             orderBy: { createdAt: 'desc' },
             include: {
@@ -71,6 +85,7 @@ let ArticlesService = class ArticlesService {
                 }
             }
         });
+        return articles.map(a => this.formatArticleUrl(a));
     }
     async findOne(id) {
         const article = await this.prisma.article.findUnique({
@@ -84,22 +99,34 @@ let ArticlesService = class ArticlesService {
         if (!article) {
             throw new common_1.NotFoundException(`Article avec l'ID ${id} non trouvé`);
         }
-        return article;
+        return this.formatArticleUrl(article);
     }
     async update(id, updateArticleDto, files) {
         await this.findOne(id);
         const processedData = this.processFiles(updateArticleDto, files);
         const { siteId, ...articleData } = processedData;
-        return this.prisma.article.update({
+        const updatedArticle = await this.prisma.article.update({
             where: { id },
             data: articleData,
+            include: {
+                site: {
+                    select: { name: true }
+                }
+            }
         });
+        return this.formatArticleUrl(updatedArticle);
     }
     async remove(id) {
         await this.findOne(id);
-        return this.prisma.article.delete({
+        const deletedArticle = await this.prisma.article.delete({
             where: { id },
+            include: {
+                site: {
+                    select: { name: true }
+                }
+            }
         });
+        return this.formatArticleUrl(deletedArticle);
     }
     uploadImage(file) {
         if (!file) {
