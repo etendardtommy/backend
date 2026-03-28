@@ -113,4 +113,12 @@ export class MessagesService {
             where: { id },
         });
     }
+
+    async removeBulk(ids: number[]) {
+        return this.prisma.message.deleteMany({
+            where: {
+                id: { in: ids },
+            },
+        });
+    }
 }

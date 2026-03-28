@@ -4,61 +4,62 @@ export declare class MessagesController {
     private readonly messagesService;
     constructor(messagesService: MessagesService);
     create(createMessageDto: CreateMessageDto, siteId?: string): Promise<{
-        id: number;
-        siteId: number | null;
+        name: string;
+        email: string;
+        message: string;
+        status: string;
         createdAt: Date;
         updatedAt: Date;
-        name: string;
-        message: string;
-        email: string;
-        status: string;
+        id: number;
+        siteId: number | null;
     }>;
     findAll(): Promise<({
         site: {
             name: string;
         } | null;
     } & {
-        id: number;
-        siteId: number | null;
+        name: string;
+        email: string;
+        message: string;
+        status: string;
         createdAt: Date;
         updatedAt: Date;
-        name: string;
-        message: string;
-        email: string;
-        status: string;
+        id: number;
+        siteId: number | null;
     })[]>;
     findOne(id: string): Promise<({
         site: {
             name: string;
         } | null;
     } & {
-        id: number;
-        siteId: number | null;
+        name: string;
+        email: string;
+        message: string;
+        status: string;
         createdAt: Date;
         updatedAt: Date;
-        name: string;
-        message: string;
-        email: string;
-        status: string;
+        id: number;
+        siteId: number | null;
     }) | null>;
     updateStatus(id: string, status: string): Promise<{
-        id: number;
-        siteId: number | null;
+        name: string;
+        email: string;
+        message: string;
+        status: string;
         createdAt: Date;
         updatedAt: Date;
-        name: string;
-        message: string;
-        email: string;
-        status: string;
+        id: number;
+        siteId: number | null;
     }>;
     remove(id: string): Promise<{
-        id: number;
-        siteId: number | null;
+        name: string;
+        email: string;
+        message: string;
+        status: string;
         createdAt: Date;
         updatedAt: Date;
-        name: string;
-        message: string;
-        email: string;
-        status: string;
+        id: number;
+        siteId: number | null;
     }>;
+    removeBulk(ids: number[]): Promise<import(".prisma/client").Prisma.BatchPayload>;
 }

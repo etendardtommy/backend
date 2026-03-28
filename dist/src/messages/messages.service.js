@@ -106,6 +106,13 @@ let MessagesService = MessagesService_1 = class MessagesService {
             where: { id },
         });
     }
+    async removeBulk(ids) {
+        return this.prisma.message.deleteMany({
+            where: {
+                id: { in: ids },
+            },
+        });
+    }
 };
 exports.MessagesService = MessagesService;
 exports.MessagesService = MessagesService = MessagesService_1 = __decorate([

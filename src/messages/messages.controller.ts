@@ -42,4 +42,10 @@ export class MessagesController {
     remove(@Param('id') id: string) {
         return this.messagesService.remove(+id);
     }
+
+    @UseGuards(JwtAuthGuard)
+    @Post('bulk-delete')
+    removeBulk(@Body('ids') ids: number[]) {
+        return this.messagesService.removeBulk(ids);
+    }
 }

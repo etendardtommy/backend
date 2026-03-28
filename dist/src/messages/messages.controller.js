@@ -40,6 +40,9 @@ let MessagesController = class MessagesController {
     remove(id) {
         return this.messagesService.remove(+id);
     }
+    removeBulk(ids) {
+        return this.messagesService.removeBulk(ids);
+    }
 };
 exports.MessagesController = MessagesController;
 __decorate([
@@ -82,6 +85,14 @@ __decorate([
     __metadata("design:paramtypes", [String]),
     __metadata("design:returntype", void 0)
 ], MessagesController.prototype, "remove", null);
+__decorate([
+    (0, common_1.UseGuards)(jwt_auth_guard_1.JwtAuthGuard),
+    (0, common_1.Post)('bulk-delete'),
+    __param(0, (0, common_1.Body)('ids')),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Array]),
+    __metadata("design:returntype", void 0)
+], MessagesController.prototype, "removeBulk", null);
 exports.MessagesController = MessagesController = __decorate([
     (0, common_1.Controller)('messages'),
     __metadata("design:paramtypes", [messages_service_1.MessagesService])
